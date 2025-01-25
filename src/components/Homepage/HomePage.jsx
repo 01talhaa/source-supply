@@ -1,389 +1,703 @@
-'use client'
-import { useState, useEffect } from 'react';
-import { 
-  Search, CheckCircle, ShieldCheck, TrendingUp, Network, 
-  Building, Atom, Cpu, Shirt, Globe, Zap, Users, 
-  ArrowRight, Star, ChevronLeft, ChevronRight, Menu, X
-} from 'lucide-react';
+"use client"
 
+import { useState, useEffect } from "react"
+import {
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  ShoppingCart,
+  Bell,
+  Menu,
+  X,
+  ChevronDown,
+  Globe,
+  Shield,
+  Truck,
+  Clock,
+  Award,
+  Users,
+} from "lucide-react"
+import Image from "next/image"
 
-const RawMaterialsPlatform = () => {
-  const [currentBanner, setCurrentBanner] = useState(0);
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
-  const [email, setEmail] = useState('');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+export default function RawMaterialsMarketplace() {
+  const [currentBanner, setCurrentBanner] = useState(0)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [activeCategory, setActiveCategory] = useState(null)
+  const [isTopHeaderDropdownOpen, setIsTopHeaderDropdownOpen] = useState(false)
 
+  const toggleTopHeaderDropdown = () => {
+    setIsTopHeaderDropdownOpen(!isTopHeaderDropdownOpen)
+  }
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const bannerContent = [
+  const categories = [
     {
-      title: "Revolutionize Your Procurement",
-      subtitle: "AI-Powered Supplier Matching",
-      background: "bg-blue-600",
-      buttonText: "Explore Solutions"
+      name: "Industrial Metals",
+      subcategories: ["Steel & Alloys", "Aluminum", "Copper", "Precious Metals", "Raw Ore", "Scrap Metal"],
     },
     {
-      title: "Global Supply Chain Intelligence",
-      subtitle: "Real-Time Market Insights",
-      background: "bg-purple-600",
-      buttonText: "View Analytics"
+      name: "Chemicals",
+      subcategories: [
+        "Industrial Chemicals",
+        "Agricultural Chemicals",
+        "Pharmaceutical Chemicals",
+        "Solvents",
+        "Polymers",
+        "Laboratory Chemicals",
+      ],
     },
     {
-      title: "Compliance & Quality Assurance",
-      subtitle: "Automated Regulatory Tracking",
-      background: "bg-green-600",
-      buttonText: "Learn More"
-    }
-  ];
+      name: "Textiles",
+      subcategories: [
+        "Raw Cotton",
+        "Synthetic Fibers",
+        "Yarn",
+        "Technical Textiles",
+        "Fabric Materials",
+        "Textile Chemicals",
+      ],
+    },
+    {
+      name: "Plastics",
+      subcategories: [
+        "Raw Polymers",
+        "Recycled Plastics",
+        "Engineering Plastics",
+        "Biodegradable Materials",
+        "Plastic Additives",
+        "Resins",
+      ],
+    },
+    {
+      name: "Construction",
+      subcategories: ["Cement", "Aggregates", "Steel Bars", "Wood Materials", "Glass", "Insulation"],
+    },
+  ]
 
-  const industries = [
-    { name: 'Manufacturing', icon: <Building className="text-blue-500" size={48} /> },
-    { name: 'Pharmaceuticals', icon: <Atom className="text-green-500" size={48} /> },
-    { name: 'Technology', icon: <Cpu className="text-purple-500" size={48} /> },
-    { name: 'Textiles', icon: <Shirt className="text-pink-500" size={48} /> },
-    { name: 'Automotive', icon: <Globe className="text-orange-500" size={48} /> },
-    { name: 'Aerospace', icon: <Zap className="text-red-500" size={48} /> }
-  ];
-
-  const testimonials = [
+  const deals = [
     {
-      name: 'Sarah Johnson',
-      role: 'CPO, TechGlobal Inc.',
-      quote: "RawSource transformed our procurement strategy with unparalleled supplier intelligence.",
-      rating: 5
+      title: "Premium Steel Alloy",
+      price: "BDT 154.83/ton",
+      originalPrice: "BDT 202.60/ton",
+      discount: "-31%",
+      minOrder: "5 tons",
+      image: "/placeholder.svg?height=200&width=200",
     },
     {
-      name: 'Michael Chen',
-      role: 'Supply Chain Director, PharmaSolutions',
-      quote: "The platform's AI-driven matching has reduced our sourcing time by 40%.",
-      rating: 5
+      title: "Industrial Grade Copper",
+      price: "BDT 288.95/kg",
+      originalPrice: "BDT 340.67/kg",
+      discount: "-25%",
+      minOrder: "100 kg",
+      image: "/placeholder.svg?height=200&width=200",
     },
     {
-      name: 'Emily Rodriguez',
-      role: 'Procurement Lead, AutoTech',
-      quote: "Comprehensive market insights that drive strategic decision-making.",
-      rating: 5
-    }
-  ];
+      title: "Raw Cotton Premium",
+      price: "BDT 312.94/bale",
+      originalPrice: "BDT 384.78/bale",
+      discount: "-35%",
+      minOrder: "50 bales",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      title: "Industrial Chemicals",
+      price: "BDT 89.99/L",
+      originalPrice: "BDT 120.00/L",
+      discount: "-28%",
+      minOrder: "200 L",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+  ]
 
   const partners = [
-    { name: 'Samsung', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/2560px-Samsung_Logo.svg.png' },
-    { name: 'Apple', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTA5r0_FrSjm2OgttQLwh_CnVCnzbJ7dLv6oA&s' },
-    { name: 'Meghna group', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7b/MGI_Logo.png' },
-    { name: 'Pfizer', logo: 'https://media.licdn.com/dms/image/v2/C4D0BAQEbPzjochVquA/company-logo_200_200/company-logo_200_200/0/1631305874324?e=2147483647&v=beta&t=slBfEtphAJQwRginClju8RdIPKqSWYeIjjAD9aYmBSc' }
-  ];
+    {
+      name: "BASF",
+      logo: "/placeholder.svg?height=60&width=120",
+      description: "Chemical Manufacturing",
+    },
+    {
+      name: "ArcelorMittal",
+      logo: "/placeholder.svg?height=60&width=120",
+      description: "Steel Production",
+    },
+    {
+      name: "Dow Chemical",
+      logo: "/placeholder.svg?height=60&width=120",
+      description: "Chemical Solutions",
+    },
+    {
+      name: "ThyssenKrupp",
+      logo: "/placeholder.svg?height=60&width=120",
+      description: "Industrial Materials",
+    },
+    {
+      name: "Covestro",
+      logo: "/placeholder.svg?height=60&width=120",
+      description: "Polymer Materials",
+    },
+    {
+      name: "Siemens",
+      logo: "/placeholder.svg?height=60&width=120",
+      description: "Industrial Solutions",
+    },
+  ]
 
   const features = [
     {
-      title: 'AI Matching',
-      description: 'Advanced algorithms connect you with ideal suppliers.',
-      icon: <Network className="text-blue-500" size={40} />
+      icon: <Globe className="w-8 h-8" />,
+      title: "Global Sourcing",
+      description: "Access suppliers worldwide",
     },
     {
-      title: 'Real-time Analytics',
-      description: 'Instant market insights and pricing intelligence.',
-      icon: <TrendingUp className="text-green-500" size={40} />
+      icon: <Shield className="w-8 h-8" />,
+      title: "Verified Suppliers",
+      description: "Quality assured partners",
     },
     {
-      title: 'Compliance Tracking',
-      description: 'Automated regulatory and quality standard monitoring.',
-      icon: <ShieldCheck className="text-purple-500" size={40} />
-    }
-  ];
+      icon: <Truck className="w-8 h-8" />,
+      title: "Logistics Support",
+      description: "End-to-end shipping",
+    },
+    {
+      icon: <Clock className="w-8 h-8" />,
+      title: "24/7 Support",
+      description: "Round-the-clock assistance",
+    },
+  ]
+
+  const banners = [
+    {
+      title: "Global Industrial Materials",
+      subtitle: "Direct from Verified Manufacturers",
+      image: "/placeholder.svg?height=400&width=1200",
+      color: "from-blue-900 to-blue-700",
+    },
+    {
+      title: "Premium Chemical Supply",
+      subtitle: "ISO Certified Products",
+      image: "/placeholder.svg?height=400&width=1200",
+      color: "from-green-900 to-green-700",
+    },
+    {
+      title: "Bulk Metal & Alloys",
+      subtitle: "Competitive Factory Pricing",
+      image: "/placeholder.svg?height=400&width=1200",
+      color: "from-purple-900 to-purple-700",
+    },
+  ]
 
   useEffect(() => {
-    const bannerInterval = setInterval(() => {
-      setCurrentBanner((prev) => (prev + 1) % bannerContent.length);
-    }, 5000);
-
-    const testimonialInterval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-    }, 6000);
-
-    return () => {
-      clearInterval(bannerInterval);
-      clearInterval(testimonialInterval);
-    };
-  }, []);
-
-  const nextBanner = () => {
-    setCurrentBanner((prev) => (prev + 1) % bannerContent.length);
-  };
-
-  const prevBanner = () => {
-    setCurrentBanner((prev) => (prev - 1 + bannerContent.length) % bannerContent.length);
-  };
-
-  const nextTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-  };
-
-  const prevTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
-
-  const handleSubscribe = (e) => {
-    e.preventDefault();
-    // Placeholder for subscription logic
-    console.log('Subscribed with email:', email);
-    alert('Thank you for subscribing!');
-    setEmail('');
-  };
+    const interval = setInterval(() => {
+      setCurrentBanner((prev) => (prev + 1) % banners.length)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
-    <div className="bg-gray-50 min-h-screen text-gray-900">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="sticky top-0 bg-white/90 backdrop-blur-md shadow-md z-50">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-4 w-full">
-            <div className="text-2xl font-bold text-blue-600 flex-grow">RawSource</div>
-            
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-4">
-              {['Markets', 'Solutions', 'Suppliers', 'Insights'].map(item => (
-                <a key={item} href="#" className="text-gray-600 hover:text-blue-600">
-                  {item}
+      <header className="bg-white shadow-md sticky top-0 z-50">
+        <div className="container mx-auto px-4">
+          {/* Top Header */}
+          <div className="py-2 border-b text-sm">
+            <div className="hidden md:flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <span className="flex items-center">
+                  <Globe className="w-4 h-4 mr-1" />
+                  Ship to: Bangladesh
+                </span>
+                <span>|</span>
+                <span className="flex items-center">
+                  <Users className="w-4 h-4 mr-1" />
+                  10,000+ Suppliers
+                </span>
+              </div>
+              <div className="flex items-center space-x-6">
+                <a href="#" className="hover:text-blue-600 transition">
+                  Supplier Zone
                 </a>
-              ))}
-            </nav>
-
-            {/* Mobile Menu Button */}
+                <a href="#" className="hover:text-blue-600 transition">
+                  Help Center
+                </a>
+                <a href="#" className="hover:text-blue-600 transition">
+                  Register
+                </a>
+                <a href="#" className="hover:text-blue-600 transition">
+                  Sign In
+                </a>
+              </div>
+            </div>
             <div className="md:hidden">
-              <button onClick={toggleMenu} className="text-gray-600">
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-4">
+                  <span className="flex items-center">
+                    <Globe className="w-4 h-4 mr-1" />
+                    Ship to: Bangladesh
+                  </span>
+                  <span className="flex items-center">
+                    <Users className="w-4 h-4 mr-1" />
+                    10,000+ Suppliers
+                  </span>
+                </div>
+                <button onClick={toggleTopHeaderDropdown} className="text-gray-600 hover:text-blue-600 transition">
+                  {isTopHeaderDropdownOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                </button>
+              </div>
+
+              {isTopHeaderDropdownOpen && (
+                <div className="mt-4 space-y-4">
+                  <div className="flex flex-col space-y-3">
+                    <a href="#" className="hover:text-blue-600 transition">
+                      Supplier Zone
+                    </a>
+                    <a href="#" className="hover:text-blue-600 transition">
+                      Help Center
+                    </a>
+                    <a href="#" className="hover:text-blue-600 transition">
+                      Register
+                    </a>
+                    <a href="#" className="hover:text-blue-600 transition">
+                      Sign In
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Main Header */}
+          <div className="flex flex-col md:flex-row items-center py-4 space-y-4 md:space-y-0 md:space-x-8">
+            <div className="flex items-center justify-between w-full md:w-auto">
+              <div className="text-2xl font-bold text-blue-600">RawMart</div>
+
+              {/* Icons */}
+              <div className="flex md:hidden items-center space-x-4">
+                <button className="relative hover:text-blue-600 transition">
+                  <Bell className="w-6 h-6" />
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    3
+                  </span>
+                </button>
+                <button className="relative hover:text-blue-600 transition">
+                  <ShoppingCart className="w-6 h-6" />
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    2
+                  </span>
+                </button>
+              </div>
+
+              {/* Mobile Menu Button */}
+              <button
+                className="md:hidden text-gray-600 hover:text-blue-600 transition"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                <Menu className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="hidden md:flex items-center space-x-4">
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors">
-                Request Demo
+            {/* Search Bar */}
+            <div className="w-full md:max-w-4xl">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search products, suppliers, or categories..."
+                  className="w-full pl-10 pr-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-3 py-1 md:py-1.5 rounded-md hover:bg-blue-700 transition text-sm">
+                  Search
+                </button>
+              </div>
+            </div>
+
+            {/* Desktop Icons */}
+            <div className="hidden md:flex items-center space-x-6">
+              <button className="relative hover:text-blue-600 transition">
+                <Bell className="w-6 h-6" />
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  3
+                </span>
               </button>
+              <button className="relative hover:text-blue-600 transition">
+                <ShoppingCart className="w-6 h-6" />
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  2
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Categories Navigation */}
+          <nav className="hidden md:block relative">
+            <div className="flex items-center space-x-8 py-4">
+              {categories.map((category) => (
+                <div
+                  key={category.name}
+                  className="relative group"
+                  onMouseEnter={() => setActiveCategory(category.name)}
+                  onMouseLeave={() => setActiveCategory(null)}
+                >
+                  <button className="flex items-center space-x-1 hover:text-blue-600 transition">
+                    <span>{category.name}</span>
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {activeCategory === category.name && (
+                    <div className="absolute top-full left-0 w-64 bg-white shadow-lg rounded-lg py-2 z-50">
+                      {category.subcategories.map((sub) => (
+                        <a
+                          key={sub}
+                          href="#"
+                          className="block px-4 py-2 hover:bg-gray-50 hover:text-blue-600 transition"
+                        >
+                          {sub}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      {/* Mobile Menu - Expanded Categories */}
+      {isMenuOpen && (
+        <div className="md:hidden bg-white border-b fixed top-[153px] left-0 right-0 z-40 overflow-y-auto max-h-[calc(100vh-153px)]">
+          <div className="container mx-auto px-4 py-2">
+            <div className="mb-4 border-b pb-4">
+              <div className="flex justify-between items-center mb-4">
+                <span className="text-lg font-semibold">Categories</span>
+                <button onClick={() => setIsMenuOpen(false)}>
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              {categories.map((category) => (
+                <div key={category.name} className="py-2 border-b last:border-b-0">
+                  <button
+                    onClick={() => setActiveCategory(activeCategory === category.name ? null : category.name)}
+                    className="flex items-center justify-between w-full py-2"
+                  >
+                    <span>{category.name}</span>
+                    <ChevronDown
+                      className={`w-4 h-4 transform transition ${activeCategory === category.name ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                  {activeCategory === category.name && (
+                    <div className="pl-4 py-2 space-y-2 bg-gray-50 rounded-lg">
+                      {category.subcategories.map((sub) => (
+                        <a key={sub} href="#" className="block py-1 hover:text-blue-600">
+                          {sub}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Mobile Quick Actions */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Quick Actions</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <button className="bg-blue-600 text-white py-2 rounded-lg flex items-center justify-center space-x-2">
+                  <ShoppingCart className="w-5 h-5" />
+                  <span>Cart (2)</span>
+                </button>
+                <button className="bg-blue-600 text-white py-2 rounded-lg flex items-center justify-center space-x-2">
+                  <Bell className="w-5 h-5" />
+                  <span>Notifications (3)</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Mobile Dropdown Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-md">
-            <nav className="flex flex-col">
-              {['Markets', 'Solutions', 'Suppliers', 'Insights'].map(item => (
-                <a 
-                  key={item} 
-                  href="#" 
-                  className="px-4 py-3 border-b text-gray-600 hover:bg-gray-100"
-                >
-                  {item}
-                </a>
-              ))}
-              <button className="w-full px-4 py-3 text-left text-blue-600 hover:bg-gray-100">
-                Request Demo
-              </button>
-            </nav>
-          </div>
-        )}
-      </header>
-
-      {/* Banner Section */}
-      <div className="relative h-[500px] overflow-hidden">
-        {bannerContent.map((banner, index) => (
-          <div 
-            key={index}
-            className={`absolute inset-0 transition-all duration-700 ease-in-out ${
-              index === currentBanner ? 'opacity-100' : 'opacity-0'
-            } ${banner.background} text-white flex items-center justify-center`}
-            style={{ transform: `translateX(${(index - currentBanner) * 100}%)` }}
-          >
-            <div className="text-center max-w-3xl px-4">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">{banner.title}</h1>
-              <p className="text-xl mb-8">{banner.subtitle}</p>
-              <button className="bg-white text-black px-6 py-3 rounded-full hover:bg-gray-100 transition">
-                {banner.buttonText}
-              </button>
-            </div>
-          </div>
-        ))}
-        <button 
-          onClick={prevBanner} 
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/50 rounded-full p-2"
-        >
-          <ChevronLeft />
-        </button>
-        <button 
-          onClick={nextBanner} 
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/50 rounded-full p-2"
-        >
-          <ChevronRight />
-        </button>
-      </div>
+      )}
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-16 space-y-16">
-        {/* Search Section */}
-        <section className="text-center">
-          <h2 className="text-3xl font-bold mb-6 text-gray-900">
-            Find Your Perfect Supplier
-          </h2>
-          <div className="max-w-2xl mx-auto relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input 
-              type="text" 
-              placeholder="Search materials, suppliers, industries..."
-              className="w-full pl-12 pr-4 py-3 border rounded-full focus:ring-2 focus:ring-blue-500"
-            />
+      <main className="pt-4">
+        {/* Banner Carousel */}
+        <div className="relative overflow-hidden h-[400px] mb-12">
+          {banners.map((banner, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-transform duration-500`}
+              style={{
+                transform: `translateX(${(index - currentBanner) * 100}%)`,
+              }}
+            >
+              <div className={`bg-gradient-to-r ${banner.color} h-full relative`}>
+                <Image
+                  src={banner.image || "/placeholder.svg"}
+                  alt={banner.title}
+                  fill
+                  className="object-cover mix-blend-overlay"
+                />
+                <div className="absolute inset-0 flex items-center justify-center text-white text-center">
+                  <div>
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">{banner.title}</h1>
+                    <p className="text-lg md:text-xl mb-8">{banner.subtitle}</p>
+                    <button className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition transform hover:scale-105">
+                      Explore Now
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+          <button
+            onClick={() => setCurrentBanner((prev) => (prev - 1 + banners.length) % banners.length)}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 rounded-full p-2 hover:bg-white transition"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            onClick={() => setCurrentBanner((prev) => (prev + 1) % banners.length)}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 rounded-full p-2 hover:bg-white transition"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Features Section */}
+        <section className="bg-white py-12 border-b">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className="flex items-center space-x-4 bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition"
+                >
+                  <div className="text-blue-600 bg-blue-100 p-3 rounded-full">{feature.icon}</div>
+                  <div>
+                    <h3 className="font-semibold text-lg">{feature.title}</h3>
+                    <p className="text-sm text-gray-600">{feature.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* Industries */}
-        <section className="grid grid-cols-3 md:grid-cols-6 gap-4">
-          {industries.map((industry) => (
-            <div 
-              key={industry.name} 
-              className="bg-white border rounded-xl p-4 text-center hover:shadow-md transition"
-            >
-              {industry.icon}
-              <p className="text-sm mt-2">{industry.name}</p>
-            </div>
-          ))}
-        </section>
-
-        {/* Features */}
-        <section className="grid md:grid-cols-3 gap-6">
-          {features.map((feature) => (
-            <div 
-              key={feature.title} 
-              className="bg-white border rounded-xl p-6 hover:shadow-lg transition"
-            >
-              <div className="mb-4">{feature.icon}</div>
-              <h3 className="font-bold text-xl mb-3">{feature.title}</h3>
-              <p className="text-gray-600">{feature.description}</p>
-            </div>
-          ))}
-        </section>
-
-        {/* Testimonials */}
-        <section className="relative py-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Client Testimonials</h2>
-          <div className="max-w-2xl mx-auto relative h-64">
-            {testimonials.map((testimonial, index) => (
-              <div 
+        {/* Today's Deals */}
+        <section className="container mx-auto px-4 py-12">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold">Today's Deals</h2>
+            <a href="#" className="text-blue-600 hover:underline flex items-center">
+              View All
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </a>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {deals.map((deal, index) => (
+              <div
                 key={index}
-                className={`absolute top-0 left-0 right-0 transition-all duration-700 ease-in-out ${
-                  index === currentTestimonial ? 'opacity-100' : 'opacity-0'
-                }`}
-                style={{ transform: `translateX(${(index - currentTestimonial) * 100}%)` }}
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition group"
               >
-                <div className="text-center">
-                  <div className="flex justify-center mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="text-yellow-400" fill="currentColor" />
-                    ))}
+                <div className="relative h-48">
+                  <Image
+                    src={deal.image || "/placeholder.svg"}
+                    alt={deal.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute top-2 left-2 bg-red-500 text-white text-sm px-2 py-1 rounded">
+                    {deal.discount}
                   </div>
-                  <p className="text-xl italic mb-6">"{testimonial.quote}"</p>
-                  <div className="font-semibold">
-                    {testimonial.name}
-                    <p className="text-gray-600">{testimonial.role}</p>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold mb-2 line-clamp-2 group-hover:text-blue-600 transition">{deal.title}</h3>
+                  <div className="space-y-2">
+                    <div className="flex items-baseline space-x-2">
+                      <span className="text-xl font-bold text-blue-600">{deal.price}</span>
+                      <span className="text-sm text-gray-500 line-through">{deal.originalPrice}</span>
+                    </div>
+                    <p className="text-sm text-gray-600">Min. Order: {deal.minOrder}</p>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          <button 
-            onClick={prevTestimonial} 
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-100 rounded-full p-2"
-          >
-            <ChevronLeft />
-          </button>
-          <button 
-            onClick={nextTestimonial} 
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-100 rounded-full p-2"
-          >
-            <ChevronRight />
-          </button>
         </section>
 
-        {/* Partners */}
-        <section className="text-center">
-  <h2 className="text-3xl font-bold mb-8">Trusted by Industry Leaders</h2>
-  <div className="flex flex-wrap justify-center items-center gap-8">
-    {partners.map((partner) => (
-      <img 
-        key={partner.name} 
-        src={partner.logo} 
-        alt={partner.name} 
-        className="w-20 h-auto grayscale hover:grayscale-0 transition object-contain" // Controls size and maintains aspect ratio
-      />
-    ))}
-  </div>
-</section>
+        {/* Partner Companies */}
+        <section className="bg-white py-12">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-8">Trusted by Industry Leaders</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+              {partners.map((partner, index) => (
+                <div key={index} className="flex flex-col items-center text-center group">
+                  <div className="relative w-32 h-16 mb-4 overflow-hidden rounded-lg shadow-sm group-hover:shadow-md transition">
+                    <Image
+                      src={partner.logo || "/placeholder.svg"}
+                      alt={partner.name}
+                      fill
+                      className="object-contain p-2"
+                    />
+                  </div>
+                  <h3 className="font-semibold group-hover:text-blue-600 transition">{partner.name}</h3>
+                  <p className="text-sm text-gray-600">{partner.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
+        {/* Business Metrics */}
+        <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-16">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div className="bg-white/10 p-6 rounded-lg backdrop-blur-sm">
+                <div className="text-4xl font-bold mb-2">5M+</div>
+                <div className="text-blue-200">Verified Suppliers</div>
+              </div>
+              <div className="bg-white/10 p-6 rounded-lg backdrop-blur-sm">
+                <div className="text-4xl font-bold mb-2">20M+</div>
+                <div className="text-blue-200">Product Listings</div>
+              </div>
+              <div className="bg-white/10 p-6 rounded-lg backdrop-blur-sm">
+                <div className="text-4xl font-bold mb-2">150+</div>
+                <div className="text-blue-200">Countries Served</div>
+              </div>
+              <div className="bg-white/10 p-6 rounded-lg backdrop-blur-sm">
+                <div className="text-4xl font-bold mb-2">24/7</div>
+                <div className="text-blue-200">Customer Support</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Quality Assurance */}
+        <section className="container mx-auto px-4 py-12">
+          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+            <div className="flex items-center justify-center mb-8">
+              <Award className="w-16 h-16 text-blue-600" />
+            </div>
+            <h2 className="text-3xl font-bold mb-4">Quality Assurance & Certification</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto mb-8">
+              All suppliers on our platform undergo rigorous verification processes and must maintain relevant industry
+              certifications. We ensure compliance with international quality standards to provide you with the best
+              products and services.
+            </p>
+            <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition transform hover:scale-105">
+              Learn More About Our Standards
+            </button>
+          </div>
+        </section>
       </main>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-r from-blue-900 to-purple-900 text-white py-12 px-4">
-        <div className="container mx-auto grid md:grid-cols-5 gap-8">
-          <div className="col-span-2">
-            <h3 className="text-2xl font-bold mb-4">Stay Informed</h3>
-            <p className="text-gray-300 mb-6">
-              Subscribe for market insights, procurement strategies, and exclusive updates.
-            </p>
-            <form onSubmit={handleSubscribe} className="flex">
-              <input 
-                type="email" 
-                placeholder="Your email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-4 py-2 rounded-l-lg text-gray-900"
-              />
-              <button 
-                type="submit" 
-                className="bg-blue-600 text-white px-6 py-2 rounded-r-lg hover:bg-blue-700"
-              >
-                Subscribe
-              </button>
-            </form>
-          </div>
-          {[
-            { 
-              title: 'Platform', 
-              links: ['Markets', 'Solutions', 'Pricing'] 
-            },
-            { 
-              title: 'Resources', 
-              links: ['Blog', 'Whitepapers', 'Case Studies'] 
-            },
-            { 
-              title: 'Company', 
-              links: ['About', 'Careers', 'Press'] 
-            },
-            { 
-              title: 'Support', 
-              links: ['Contact', 'Help Center', 'Documentation'] 
-            }
-          ].map((section) => (
-            <div key={section.title}>
-              <h4 className="font-bold mb-4 text-gray-200">{section.title}</h4>
+      <footer className="bg-gray-900 text-gray-300 pt-16 pb-8">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+            <div>
+              <h3 className="text-white font-bold mb-4">About RawMart</h3>
               <ul className="space-y-2">
-                {section.links.map((link) => (
-                  <li key={link}>
-                    <a href="#" className="text-gray-300 hover:text-white">
-                      {link}
-                    </a>
-                  </li>
-                ))}
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    About Us
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Careers
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Press & Media
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Blog
+                  </a>
+                </li>
               </ul>
             </div>
-          ))}
-        </div>
-        <div className="text-center text-gray-400 mt-8 pt-6 border-t border-gray-800">
-          © 2024 RawSource Platform. All Rights Reserved.
+            <div>
+              <h3 className="text-white font-bold mb-4">Buy on RawMart</h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    All Categories
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Supplier Membership
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Buyer Protection
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Trade Assurance
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-white font-bold mb-4">Sell on RawMart</h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Supplier Membership
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Learning Center
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Partner Program
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Success Stories
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-white font-bold mb-4">Trade Services</h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Trade Assurance
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Logistics Services
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Letter of Credit
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Inspection Services
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 pt-8 text-center">
+            <p className="text-sm">© 2024 RawMart. All rights reserved. | Terms of Use | Privacy Policy</p>
+          </div>
         </div>
       </footer>
     </div>
-  );
-};
+  )
+}
 
-export default RawMaterialsPlatform;
